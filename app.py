@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 # load env
 load_dotenv() # Loads variables from .env
-os.environ["GROQ_API_KEY"]
 
 # Page configuration
 st.set_page_config(
@@ -218,7 +217,9 @@ with st.sidebar:
     
     # Model selection
     model_options = {
-        "Aqal 1.0 1.5B": "llama-3.3-70b-versatile"
+        # "Aqal 1.0 1.5B": "llama-3.3-70b-versatile",
+        "Aqal 1.0 1.5B": "openai/gpt-oss-20b",
+        
     }
     
     selected_model = st.selectbox(
@@ -292,7 +293,7 @@ def get_reasoning_prompt(question: str, depth: str = "deep"):
     }
     
     system_prompt = f"""You are an advanced Urdu reasoning AI assistant and your name is Aqal(عقل). Your task is to:
-1. Think through the problem step-by-step in English (for clarity)
+1. Think through the problem step-by-step in Urdu (for clarity)
 2. Provide the final answer in Urdu
 3. Show your complete reasoning process
 
@@ -301,7 +302,7 @@ Reasoning Depth: {depth_instructions.get(depth, depth_instructions['deep'])}
 Format your response EXACTLY as follows:
 
 <THINKING>
-[Your detailed step-by-step reasoning process in English]
+[Your detailed step-by-step reasoning process in Urdu]
 Step 1: [Analysis]
 Step 2: [Analysis]
 ...
@@ -309,7 +310,7 @@ Confidence: [X]%
 </THINKING>
 
 <ANSWER>
-[Your final answer in proper Urdu with not full explanation]
+[Your final answer in proper Urdu with full explanation]
 </ANSWER>
 
 Important:
