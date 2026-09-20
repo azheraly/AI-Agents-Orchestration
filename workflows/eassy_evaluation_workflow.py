@@ -6,7 +6,7 @@ from langgraph.graph import START, StateGraph, START, END
 from typing import Annotated, TypedDict
 from dotenv import load_dotenv
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-from pydantic import BaseModel, Field
+from pydantic_basic import BaseModel, Field
 
 
 # load env
