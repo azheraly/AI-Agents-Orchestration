@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 from langchain_tavily import TavilySearch
 from langchain_groq import ChatGroq
+from langchain.tools import tool
+import requests
 
 load_dotenv()
 
@@ -14,9 +16,20 @@ llm = ChatGroq(
 )
 
 
+@tool
 def get_weather(city: str) -> str:
     """Get weather for a given city."""
-    return f"It's dark cloudy in {city}!"
+
+    response = requests.get(
+        f"http://api.weatherstack.com/current?access_key={os.environ.get('WEATHERSTACK_API_KEY')}&query={city}"
+    )
+    data = response.json()
+    if "current" not in data:
+        return f"Could not retrieve weather data for {city}. Please check the city name and try again."
+    else:
+        temperature = data["current"]["temperature"]
+        weather_descriptions = data["current"]["weather_descriptions"]
+        return f"The current temperature in {city} is {temperature}°C with {', '.join(weather_descriptions)}."
 
 
 search_tool = TavilySearch(
@@ -26,7 +39,9 @@ search_tool = TavilySearch(
 )
 
 agent = create_agent(
-    model=llm, tools=[search_tool], system_prompt="You are a helpful assistant"
+    model=llm,
+    tools=[search_tool, get_weather],
+    system_prompt="You are a helpful assistant",
 )
 
 
@@ -38,13 +53,8 @@ result = agent.invoke(
                 "content": "what is the weather in Islamabad Pakistan today?",
             }
         ]
-    }
+    },
 )
 
 
 print(result["messages"][-1].content_blocks)
-
-# result = search_tool.invoke({"query": "give me the latest news on ai?"})
-# print(result["results"])
-
-
